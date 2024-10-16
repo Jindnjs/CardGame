@@ -117,12 +117,12 @@ const showCards = () => {
 const startTimer = () => {
   let count = 0.0
   time = setInterval(() => {
-    count += 0.01
-    gameTimer.innerText = count.toFixed(2)
+    count += 0.1
+    gameTimer.innerText = count.toFixed(1)
     if (count >= 999.99) {
       endGame(failed)
     }
-  }, 10)
+  }, 100)
 }
 
 /**
