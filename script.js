@@ -1,7 +1,8 @@
 // Game Constants
 const gameElements = {
   gameBoard: document.querySelector('.game-board'),
-  dialog: document.querySelector('#dialog-default')
+  dialog: document.querySelector('#dialog-default'),
+  gameTimer: document.querySelector('.game-timer')
 }
 
 let gameStatus = {
@@ -9,7 +10,8 @@ let gameStatus = {
   matchedCount: 0,
   cards: null,
   cardOne: null,
-  cardTwo: null
+  cardTwo: null,
+  time: null
 }
 
 // ? 두 가지 요소를 비교하는 방법으로 item 객체를 만드는 게 최선일까?
@@ -43,8 +45,8 @@ let gameResults = {
 
 // 게임 상태 구조 분해 할당
 let {cleared, failed} = gameResults
-let {gameBoard, dialog} = gameElements
-let {clickPause, matchedCount, cards, cardOne, cardTwo} = gameStatus
+let {gameTimer, gameBoard, dialog} = gameElements
+let {clickPause, matchedCount, cards, cardOne, cardTwo, time} = gameStatus
 
 /**
  * 1. 카드 랜덤 배치
@@ -107,6 +109,20 @@ const showCards = () => {
       card.classList.remove('show')
     }, 7000)
   })
+}
+/**
+ * 4. 카운트다운 타이머
+ * @description 30초 카운트다운 후 clearInterval() 메서드로 타이머 제거 후 게임 재시작 팝업창 띄우기
+ */
+const startTimer = () => {
+  let count = 0.0
+  time = setInterval(() => {
+    count += 0.01
+    gameTimer.innerText = count.toFixed(2)
+    if (count >= 999.99) {
+      endGame(failed)
+    }
+  }, 10)
 }
 
 /**
@@ -207,6 +223,7 @@ const endGame = result => {
   //   resultImg.setAttribute('src', `../asset/img/${result.img}`)
   resultMsg.innerText = `Game ${result.msg}!`
 
+  clearInterval(time)
   dialog.showModal()
 }
 
@@ -233,6 +250,7 @@ const game = () => {
   shuffleCards()
   renderCards()
   showCards()
+  startTimer()
   addCardClickEvent()
 }
 game()
