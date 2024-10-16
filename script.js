@@ -1,6 +1,5 @@
 // Game Constants
 const gameElements = {
-  gameTimer: document.querySelector('.game-timer'),
   gameBoard: document.querySelector('.game-board'),
   dialog: document.querySelector('#dialog-default')
 }
@@ -10,8 +9,7 @@ let gameStatus = {
   matchedCount: 0,
   cards: null,
   cardOne: null,
-  cardTwo: null,
-  time: null
+  cardTwo: null
 }
 
 // ? 두 가지 요소를 비교하는 방법으로 item 객체를 만드는 게 최선일까?
@@ -36,19 +34,17 @@ let item = [
 
 let gameResults = {
   cleared: {
-    msg: 'Cleared',
-    img: 'result-win.gif'
+    msg: 'Cleared'
   },
   failed: {
-    msg: 'Failed',
-    img: 'result-lose.gif'
+    msg: 'Failed'
   }
 }
 
 // 게임 상태 구조 분해 할당
 let {cleared, failed} = gameResults
-let {gameTimer, gameBoard, dialog} = gameElements
-let {clickPause, matchedCount, cards, cardOne, cardTwo, time} = gameStatus
+let {gameBoard, dialog} = gameElements
+let {clickPause, matchedCount, cards, cardOne, cardTwo} = gameStatus
 
 /**
  * 1. 카드 랜덤 배치
@@ -76,10 +72,10 @@ const renderCards = () => {
     const $front = document.createElement('div')
     const $back = document.createElement('div')
     const $img = document.createElement('img')
-    $createCard.classList.add('card', 'nes-container', 'is-rounded', 'show')
+    $createCard.classList.add('card', 'nes-container', 'is-rounded')
 
     $back.classList.add('back')
-    $back.innerText = 'V'
+    $back.innerText = '?'
 
     $front.classList.add('front')
     $front.append($img)
@@ -104,28 +100,13 @@ const showCards = () => {
     // 카드에 data-id 속성 추가
     card.dataset.idx = item[index].idx
 
-    // setTimeout(() => {
-    //   card.classList.remove('show')
-    // }, index * 80)
-    // setTimeout(() => {
-    //   card.classList.add('show')
-    // }, 2000)
+    setTimeout(() => {
+      card.classList.add('show')
+    })
+    setTimeout(() => {
+      card.classList.remove('show')
+    }, 7000)
   })
-}
-
-/**
- * 4. 카운트다운 타이머
- * @description 30초 카운트다운 후 clearInterval() 메서드로 타이머 제거 후 게임 재시작 팝업창 띄우기
- */
-const startTimer = () => {
-  let count = 0.0
-  time = setInterval(() => {
-    count += 0.01
-    gameTimer.innerText = count.toFixed(2)
-    if (count >= 999.99) {
-      endGame(failed)
-    }
-  }, 10)
 }
 
 /**
@@ -138,7 +119,7 @@ const flipCard = event => {
   let clickedCard = event.target.closest('.card')
   // cardOne의 값이 비어있는 상태이며, clickPause가 false일 때만 실행
   if (cardOne !== clickedCard && !clickPause) {
-    clickedCard.classList.remove('show')
+    clickedCard.classList.add('show')
 
     // 카드를 2번 클릭했을 때만 cardOne에 값이 들어가도록 cardOne이 비어있는지 확인
     if (!cardOne) {
@@ -199,10 +180,8 @@ function differs() {
 
   setTimeout(() => {
     // 1초 후 shake, show class 제거해서 뒤집힌 카드로 원상복귀
-    cardOne.classList.remove('shake')
-    cardOne.classList.add('show')
-    cardTwo.classList.remove('shake')
-    cardTwo.classList.add('show')
+    cardOne.classList.remove('shake', 'show')
+    cardTwo.classList.remove('shake', 'show')
     cardReset()
   }, 1000)
 }
@@ -228,7 +207,6 @@ const endGame = result => {
   //   resultImg.setAttribute('src', `../asset/img/${result.img}`)
   resultMsg.innerText = `Game ${result.msg}!`
 
-  clearInterval(time)
   dialog.showModal()
 }
 
@@ -255,7 +233,6 @@ const game = () => {
   shuffleCards()
   renderCards()
   showCards()
-  startTimer()
   addCardClickEvent()
 }
 game()
